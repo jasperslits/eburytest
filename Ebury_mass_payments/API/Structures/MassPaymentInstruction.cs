@@ -10,7 +10,7 @@ namespace Ebury_mass_payments
 
         public MassPaymentInstruction()
         {
-            external_reference_id = Authenticator.generateState();
+            external_reference_id = Authenticator.GenerateState();
 
         }
     }

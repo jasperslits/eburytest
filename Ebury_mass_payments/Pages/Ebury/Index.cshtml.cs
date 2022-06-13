@@ -19,31 +19,31 @@ namespace Ebury_mass_payments.Pages.Ebury
         public async Task OnGetAsyncback()
         {
             List<EburyPayments> ep = new();
-           
+
             ep = await EburyPaymentLoader.LoadPayments("wes2.csv");
 
         }
 
-       
+
 
         public async Task OnGetAsync()
         {
-          var a = new Authenticator();
-          var r = await a.Authenticate();
-          if (r == false)
+            var a = new Authenticator();
+            var r = await a.Authenticate();
+            if (r == false)
             {
                 return;
             }
 
-           MassPaymentInstruction mpi = new MassPaymentInstruction();
-      
-           mpi.payment_instructions = await EburyPaymentLoader.LoadPayments("wes2.csv");
+            MassPaymentInstruction mpi = new MassPaymentInstruction();
+
+            mpi.payment_instructions = await EburyPaymentLoader.LoadPayments("wes2.csv");
             mpi.sell_currency = "EUR";
             eapi = new EburyApi(a.GetAccessToken());
             await eapi.SendPayments(mpi);
-    
+
             messages = eapi.getMessages();
-            
+
         }
     }
 }

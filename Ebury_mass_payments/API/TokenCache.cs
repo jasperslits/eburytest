@@ -11,7 +11,7 @@ namespace Ebury_mass_payments
         {
         }
 
-        public async Task setCache(string token)
+        public async Task SetCache(string token)
         {
             Console.WriteLine("Writing " + token + " to cache " + filename);
             await File.WriteAllTextAsync(filename, token);
@@ -20,7 +20,7 @@ namespace Ebury_mass_payments
 
 
 
-        public string? getCache()
+        public string? GetCache()
         {
             Console.WriteLine("Checking cached token " + filename);
 

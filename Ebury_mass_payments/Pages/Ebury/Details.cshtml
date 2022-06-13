@@ -4,27 +4,28 @@
 }
 
 <table>
+    <tr><th>Info message</th><th>Message</th></tr>
 
     @foreach (var x in Model.messages)
     {
         <tr>
-            <td>Message</td><td>@x</td>
+            <td>Message</td>
+            <td>@x</td>
         </tr>
 
     }
 </table>
 <br/>
 <table>
+    <tr><th>Employee</th><th>Code</th><th>Message</th></tr>
 
     @foreach (var row in Model.epe)
     {
-        <tr>
-            <td>Employee </td>
-            <td>@row.beneficiary_name (@row.beneficiary_reference)</td>
-        </tr>
+    
         @foreach (var x in row.errors)
         {
             <tr>
+                <td>@row.beneficiary_name (@row.beneficiary_reference)</td>
                 <td>@x.code</td>
                 <td>@x.message</td>
             </tr>

@@ -16,23 +16,15 @@ namespace Ebury_mass_payments.Pages.Ebury
         public List<EburyPaymentsError> epe { get; set; }
 
 
-        private async Task GetPaymentDetails(string mpi_id)
-        {
-
-            epe = await eapi.GetPayments(mpi_id);
-        }
-
         public async Task OnGetAsync(string id)
         {
             var a = new Authenticator();
-            var r = await a.Authenticate();
-            if (r == false)
-            {
-                return;
+            if (! await a.Authenticate()) {
+                messages = a.GetMessages();
             }
-
+            
             eapi = new EburyApi(a.GetAccessToken());
-            await GetPaymentDetails(id);
+            epe = await eapi.GetPayments(id);
             messages = eapi.getMessages();
 
         }
