@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Pages\Ebury\" />
+    <None Remove="NSwag.ApiDescription.Client" />
+    <None Remove="Microsoft.Extensions.ApiDescription.Client" />
+    <None Remove="Newtonsoft.Json" />
+    <None Remove="API\" />
+    <None Remove="API\Responses\" />
+    <None Remove="API\Structures\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Pages\Ebury\" />
+    <Folder Include="API\" />
+    <Folder Include="API\Responses\" />
+    <Folder Include="API\Structures\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NSwag.ApiDescription.Client" Version="13.0.5">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.ApiDescription.Client" Version="3.0.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+  </ItemGroup>
+</Project>

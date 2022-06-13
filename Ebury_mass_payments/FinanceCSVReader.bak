@@ -1,0 +1,65 @@
+﻿using CsvHelper;
+using CsvHelper.Configuration;
+using FinanceValidator.FinanceContent;
+using System.Collections.Generic;
+
+namespace FinanceValidator.BusinessLogic.CSV;
+public class FinanceCSVReader : FinanceCSVBase
+{
+
+    public static async Task<Dictionary<string, Object>> LoadData(string generated)
+    {
+        List<FinanceDetail> dRecords = new();
+        Dictionary<string, Object> rv = new();
+        List<String> errors = new();
+
+        using StreamReader reader = new($"Uploads/{generated}");
+        using CsvReader csv = new(reader, config);
+        {
+            csv.Context.TypeConverterOptionsCache.GetOptions<string>().NullValues.Add(string.Empty);
+
+            csv.Context.RegisterClassMap<HeaderMap>();
+            csv.Context.RegisterClassMap<DetailMap>();
+
+            while (csv.Read())
+            {
+                
+                switch (csv.GetField(1))
+                {
+                    case "H":
+                        FinanceHeader header = csv.GetRecord<FinanceHeader>();
+                        if (header.Paygroup == string.Empty || header.Currency == string.Empty || header.Payperiod == string.Empty) {
+                            errors.Add("Header line is incomplete");
+                        } else {
+                            rv.Add("header",header);
+                        }              
+                        break;
+
+                    case "D":
+                        dRecords.Add(csv.GetRecord<FinanceDetail>());
+                        break;
+
+                   
+
+                    default:
+                        errors.Add($"Unkown record type {csv.GetField(1)}. Only H,D,T is permitted");
+                        break;
+                }
+
+            }
+            if (! rv.ContainsKey("header")) {
+                errors.Add("Missing correct header record H");
+            }
+            
+            if (dRecords.Count < 2) {
+                errors.Add("No or insufficient detail records D found");
+            } else {
+                rv.Add("detail",dRecords);
+            }
+            
+            rv.Add("error",errors);
+            return rv;
+
+        }
+    }
+}
