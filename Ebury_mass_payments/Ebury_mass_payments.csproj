@@ -14,12 +14,15 @@
     <None Remove="API\" />
     <None Remove="API\Responses\" />
     <None Remove="API\Structures\" />
+    <None Remove="CsvHelper" />
+    <None Remove="CSV\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Pages\Ebury\" />
     <Folder Include="API\" />
     <Folder Include="API\Responses\" />
     <Folder Include="API\Structures\" />
+    <Folder Include="CSV\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NSwag.ApiDescription.Client" Version="13.0.5">
@@ -31,5 +34,6 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="CsvHelper" Version="27.2.1" />
   </ItemGroup>
 </Project>

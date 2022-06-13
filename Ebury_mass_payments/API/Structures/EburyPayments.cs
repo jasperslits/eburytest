@@ -19,8 +19,8 @@ namespace Ebury_mass_payments
         public string  payment_currency { get;set; }
         public double  payment_amount { get;set; }
         public string payment_reference { get;set; }
-        public string purpose_of_payment { get;set; }
-        public string reason_for_trade { get; set; }
+        public string purpose_of_payment { get; set; } = "Salary";
+        public string reason_for_trade { get; set; } = "salary_payroll";
         public string russian_central_bank_account { get;set; }
         public string swift_code { get;set; }
         public string trade_type { get; set; }
@@ -32,7 +32,7 @@ namespace Ebury_mass_payments
         {
             value_date = "2022-06-12";
             payment_reference = "Some payment reference";
-                
+        
         }
     }
 }
