@@ -1,8 +1,13 @@
 ﻿@page
 @model Ebury_mass_payments.Pages.Ebury.IndexModel
 
+<table>
 
-@foreach (var x in Model.messages)
-{<p>Line @x</p>
+    @foreach (var x in Model.messages)
+    {
+        <tr>
+            <td>@x</td>
+        </tr>
 
-}
+    }
+</table>

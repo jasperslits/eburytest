@@ -14,6 +14,8 @@ namespace Ebury_mass_payments.Pages.Ebury
     {
         public List<String> messages { get; set; } = new();
 
+        private EburyApi eapi { get; set; }
+
         public async Task OnGetAsyncback()
         {
             List<EburyPayments> ep = new();
@@ -21,6 +23,8 @@ namespace Ebury_mass_payments.Pages.Ebury
             ep = await EburyPaymentLoader.LoadPayments("wes2.csv");
 
         }
+
+       
 
         public async Task OnGetAsync()
         {
@@ -31,14 +35,14 @@ namespace Ebury_mass_payments.Pages.Ebury
                 return;
             }
 
-            MassPaymentInstruction mpi = new MassPaymentInstruction();
+           MassPaymentInstruction mpi = new MassPaymentInstruction();
       
-            mpi.payment_instructions = await EburyPaymentLoader.LoadPayments("wes2.csv");
+           mpi.payment_instructions = await EburyPaymentLoader.LoadPayments("wes2.csv");
             mpi.sell_currency = "EUR";
-            var m = new EburyApi(a.GetAccessToken());
-          //  await m.SendPayments(mpi);
-            await m.GetPayments();
-            messages = m.getMessages();
+            eapi = new EburyApi(a.GetAccessToken());
+            await eapi.SendPayments(mpi);
+    
+            messages = eapi.getMessages();
             
         }
     }

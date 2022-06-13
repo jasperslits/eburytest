@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text;
 using Ebury_mass_payments.API.Responses;
+using Newtonsoft.Json;
 
 namespace Ebury_mass_payments
 {
@@ -17,7 +18,8 @@ namespace Ebury_mass_payments
        private string mpi_id { get; set; }
 
         private List<String> messages { get; set; }
- 
+        private List<String> ErrorMessages { get; set; }
+
 
         public EburyApi(string token)
         {
@@ -33,16 +35,34 @@ namespace Ebury_mass_payments
 
         }
 
-        public async Task GetPayments()
+        public async Task<List<EburyPaymentsError>> GetPayments(string mpi_id = "")
         {
             var uri = EburyConfig.MPI_Errors;
             client.DefaultRequestHeaders.Clear();
-            mpi_id = "ef8595d0-cc66-495b-8a88-d04e1ac6f7af";
+            uri = uri.Replace("{basePayment}", EburyConfig.basePayment);
             uri = uri.Replace("{client_id}", EburyConfig.account_id);
             uri = uri.Replace("{$mass_payment_id}", mpi_id);
+            messages.Add("Get Payment Details URL is " + uri);
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
+     //       Line Get Payment Details URL is https://sandbox.ebury.io/mass-payments/ef8595d0-cc66-495b-8a88-d04e1ac6f7af/errors?client-id=EBPCLI285600
+
+//GET                                                                 /mass-payments/$mass_payment_id/errors?client-id=$client_id
+
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
             var response = await client.SendAsync(request);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                string responseBody = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<EburyPaymentsError>>(responseBody);
+            } else
+            {
+                messages.Add("Response code is " + response.StatusCode);
+                List<EburyPaymentsError> epe = new();
+                return epe;
+             }
+
+           
         }
 
         public List<String> getMessages()
@@ -58,7 +78,7 @@ namespace Ebury_mass_payments
             {
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
             };
-            string jsonString = JsonSerializer.Serialize(payload,options);
+            string jsonString = System.Text.Json.JsonSerializer.Serialize(payload,options);
             messages.Add("JSON " + jsonString);
             client.DefaultRequestHeaders.Clear();
 
@@ -80,9 +100,9 @@ namespace Ebury_mass_payments
 
             if (response.StatusCode == System.Net.HttpStatusCode.Accepted)
             {
-                MassPaymentResponse mpr = JsonSerializer.Deserialize<MassPaymentResponse>(responseBody);
+                MassPaymentResponse mpr = System.Text.Json.JsonSerializer.Deserialize<MassPaymentResponse>(responseBody);
                 mpi_id = mpr.mass_payment_id;
-                messages.Add(mpi_id);
+                messages.Add("Got MPI ID " + mpi_id);
                 Console.WriteLine(mpr.mass_payment_id);
             }
 

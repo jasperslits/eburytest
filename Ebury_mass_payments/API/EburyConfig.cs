@@ -24,7 +24,7 @@ namespace Ebury_mass_payments
         public const string basePayment = "sandbox.ebury.io";
 
         public const string MassPaymentCreateEndPoint = "https://{basePayment}/mass-payments?client_id={client_id}";
-        public const string MPI_Errors = "https://{basePayment}/mass-payments/{$mass_payment_id}/errors}?client-id={$client_id}";
+        public const string MPI_Errors = "https://{basePayment}/mass-payments/{$mass_payment_id}/errors?client_id={client_id}";
 
 
         public string ErrorEndPoint = "";

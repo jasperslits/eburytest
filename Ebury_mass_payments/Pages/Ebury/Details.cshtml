@@ -1,0 +1,34 @@
+﻿@page
+@model Ebury_mass_payments.Pages.Ebury.DetailsModel
+@{
+}
+
+<table>
+
+    @foreach (var x in Model.messages)
+    {
+        <tr>
+            <td>Message</td><td>@x</td>
+        </tr>
+
+    }
+</table>
+<br/>
+<table>
+
+    @foreach (var row in Model.epe)
+    {
+        <tr>
+            <td>Employee </td>
+            <td>@row.beneficiary_name (@row.beneficiary_reference)</td>
+        </tr>
+        @foreach (var x in row.errors)
+        {
+            <tr>
+                <td>@x.code</td>
+                <td>@x.message</td>
+            </tr>
+
+        }
+    }
+</table>
