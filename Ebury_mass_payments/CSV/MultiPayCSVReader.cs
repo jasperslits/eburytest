@@ -2,6 +2,7 @@
 using CsvHelper.Configuration;
 using System.Collections.Generic;
 using Ebury_mass_payments.CSV;
+using Ebury_mass_payments.Structures;
 
 namespace Ebury_mass_payments.CSV;
 public class MultiPayCSVReader : MultiPayCSVBase

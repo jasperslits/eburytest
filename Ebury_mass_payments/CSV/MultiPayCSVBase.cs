@@ -16,13 +16,13 @@ namespace Ebury_mass_payments.CSV
 
       
 
-        public sealed class PaymentMap : ClassMap<EburyPayments>
+        public sealed class PaymentMap : ClassMap<Structures.EburyPayments>
         {
             // 0000000003,D,81733004001,A,12010,2,B,C,37856.43,0,,20211231,,2-Sal�rio,
             public PaymentMap()
             {
-                Map(m => m.direction).Index(0).Default("BUY");
-                Map(m => m.trade_type).Index(1).Default("SPOT");
+                Map(m => m.direction).Index(0).Default("buy");
+                Map(m => m.trade_type).Index(1).Default("spot");
                 Map(m => m.beneficiary_name).Index(2);
                 Map(m => m.beneficiary_address).Index(3);
                 Map(m => m.beneficiary_country).Index(5);

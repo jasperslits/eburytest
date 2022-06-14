@@ -2,7 +2,13 @@
 @model Ebury_mass_payments.Pages.Ebury.IndexModel
 
 <table>
+    @foreach (var x in Model.AuthMessages)
+    {
+        <tr>
+            <td>@x</td>
+        </tr>
 
+    }
     @foreach (var x in Model.messages)
     {
         <tr>
@@ -10,4 +16,9 @@
         </tr>
 
     }
+
+
 </table>
+<br/>
+
+<a asp-page="/Ebury/Details" asp-route-id="@Model.mpi_id">View results</a>

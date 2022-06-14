@@ -1,5 +1,6 @@
 ﻿using System;
 using Ebury_mass_payments.CSV;
+using Ebury_mass_payments.Structures;
 
 namespace Ebury_mass_payments
 {

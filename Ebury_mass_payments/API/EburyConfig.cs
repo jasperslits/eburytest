@@ -34,10 +34,15 @@ namespace Ebury_mass_payments
 
         public EburyConfig()
         {
-            
+
         }
 
-        public static EburyAccounts getAccounts(string name = "")
+        public static string GetMassPaymentCreateEndPoint()
+        {
+            return MassPaymentCreateEndPoint;
+        }
+
+        public static EburyAccounts GetAccounts(string name = "")
         {
             var accounts = new List<EburyAccounts>();
             var a = new EburyAccounts("ebury.api@alight.com", "Alight2022");

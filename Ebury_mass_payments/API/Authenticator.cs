@@ -113,6 +113,7 @@ namespace Ebury_mass_payments
             Console.Write((int)getResponse.StatusCode);
 
             var content = await getResponse.Content.ReadAsStringAsync();
+            getResponse.EnsureSuccessStatusCode();
             if (!getResponse.IsSuccessStatusCode)
             {
                 if (getResponse.StatusCode == System.Net.HttpStatusCode.Unauthorized)
@@ -145,7 +146,7 @@ namespace Ebury_mass_payments
             var response = await client.PostAsync(EburyConfig.AuthenticateURL.Replace("{baseAuth}", EburyConfig.baseAuth) + "/login", data);
 
             authtoken = QueryHelpers.ParseQuery(response.RequestMessage.RequestUri.Query)["Code"];
-            messages.Add("Token = " + authtoken);
+            messages.Add("Obtained Access Token = " + authtoken);
 
 
 
@@ -165,7 +166,7 @@ namespace Ebury_mass_payments
             {
                 string responseBody = await response.Content.ReadAsStringAsync();
                 messages.Add("== Return for /login ==");
-                messages.Add(responseBody);
+             //   messages.Add(responseBody);
 
             }
             return true;

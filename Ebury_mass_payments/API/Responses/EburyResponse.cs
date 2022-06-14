@@ -1,5 +1,8 @@
 ﻿using System;
+using Ebury_mass_payments.Structures;
+
 namespace Ebury_mass_payments.API.Responses
+
 {
     public class EburyErrorDetail
     {
