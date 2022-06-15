@@ -20,7 +20,7 @@ public class EburyPayments
     public double payment_amount { get;set; }
     public string payment_reference { get;set; }
     public string purpose_of_payment { get; set; }
-    public string reason_for_trade { get; set; } = "salary_payroll";
+    public string reason_for_trade { get; set; } = "Salary/Payroll";
     public string russian_central_bank_account { get;set; }
     public string swift_code { get;set; }
     public string trade_type { get; set; }

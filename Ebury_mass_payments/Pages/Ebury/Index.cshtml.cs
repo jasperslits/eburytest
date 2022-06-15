@@ -22,12 +22,10 @@ namespace Ebury_mass_payments.Pages.Ebury
 
         public async Task OnGetAsync(string id)
         {
-            var f = "Uploads/" + id;
+            var f = $"Uploads/{id}";
             if (!System.IO.File.Exists(f))
             {
-                messages.Add("File {f} does not exist");
-
-
+                messages.Add($"File {f} does not exist");
                 return;
             }
 
@@ -35,10 +33,9 @@ namespace Ebury_mass_payments.Pages.Ebury
             var r = await a.Authenticate();
             if (r == false)
             {
+                AuthMessages = a.GetMessages();
                 return;
             }
-
-           
 
             MassPaymentInstruction mpi = new MassPaymentInstruction();
 

@@ -7,41 +7,47 @@ namespace Ebury_mass_payments
     {
         private const string filename = "TokenCache.txt";
 
+        private List<String> messages { get; set; } = new();
+
         public TokenCache()
         {
+
         }
 
         public async Task SetCache(string token)
         {
-            Console.WriteLine("Writing " + token + " to cache " + filename);
+            messages.Add($"Writing {token} to cache {filename}");
             await File.WriteAllTextAsync(filename, token);
 
         }
 
-
+        public List<String> GetMessages()
+        {
+            return messages;
+        }
 
         public string? GetCache()
         {
-            Console.WriteLine("Checking cached token " + filename);
+            messages.Add($"Checking cached token {filename}");
 
             if (! File.Exists(filename))
             {
-                Console.WriteLine("Cache file does not exist " + filename);
+                messages.Add($"Cache file does not exist {filename}");
                 return null;
             }
 
             DateTime dt = File.GetLastWriteTime(filename);
             DateTime secondDate = DateTime.Now;
             System.TimeSpan diff = secondDate.Subtract(dt);
-            if ((int)diff.TotalMinutes > EburyConfig.timeout)
+            if ((int)diff.TotalMinutes > EburyConfig.Timeout)
             {
-                Console.WriteLine("Expired as age is " + diff.TotalMinutes + " and max age is " + EburyConfig.timeout);
+                messages.Add($"Expired as age is {diff.TotalMinutes} and max age is {EburyConfig.Timeout}");
                 File.Delete(filename);
                 return null;
             }
 
             string token = System.IO.File.ReadAllText(filename).Trim();
-            Console.WriteLine("Found cached token " + token + " of age " + diff.TotalMinutes);
+            messages.Add($"Found cached token {token} of age {diff.TotalMinutes}");
 
             return token;
         }

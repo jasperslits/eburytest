@@ -1,0 +1,10 @@
+wwwroot
+bin/*
+bin/*
+Debug/*
+obj/*
+Ebury_mass_payments/obj/*
+Ebury_mass_payments/bin/*
+Uploads/*
+Ebury_mass_payments/Uploads/*
+Ebury_mass_payments/ebury_config.json

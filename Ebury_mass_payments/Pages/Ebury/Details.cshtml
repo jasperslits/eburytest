@@ -1,5 +1,5 @@
 ﻿@page
-@model Ebury_mass_payments.Pages.Ebury.DetailsModel
+@model Ebury_mass_payments.DetailsModel
 @{
 }
 
@@ -15,21 +15,7 @@
 
     }
 </table>
-<br/>
-<table>
-    <tr><th>Employee</th><th>Code</th><th>Message</th></tr>
+@if (Model.hasErrors) { 
+    <a asp-page="/Ebury/Errors" asp-route-id="@Model.mpi_id">View results</a>
 
-    @foreach (var row in Model.epe)
-    {
-    
-        @foreach (var x in row.errors)
-        {
-            <tr>
-                <td>@row.beneficiary_name (@row.beneficiary_reference)</td>
-                <td>@x.code</td>
-                <td>@x.message</td>
-            </tr>
-
-        }
-    }
-</table>
+}
