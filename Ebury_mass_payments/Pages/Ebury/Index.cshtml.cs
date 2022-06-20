@@ -16,9 +16,9 @@ namespace Ebury_mass_payments.Pages.Ebury
     {
         public List<String> AuthMessages { get; set; } = new();
         public List<String> messages { get; set; } = new();
-        public string mpi_id { get; set; }
+        public string MpiId { get; set; }
 
-        private EburyApi eapi { get; set; }
+        private EburyApi Eapi { get; set; }
 
         public async Task OnGetAsync(string id)
         {
@@ -41,10 +41,10 @@ namespace Ebury_mass_payments.Pages.Ebury
 
             mpi.payment_instructions = await EburyPaymentLoader.LoadPayments(id);
             mpi.sell_currency = "EUR";
-            eapi = new EburyApi(a.GetAccessToken());
-            mpi_id = await eapi.SendPayments(mpi,false);
+            Eapi = new EburyApi(a.GetAccessToken());
+            MpiId = await Eapi.SendPayments(mpi,false);
             AuthMessages = a.GetMessages();
-            messages = eapi.getMessages();
+            messages = Eapi.getMessages();
     
 
         }

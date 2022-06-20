@@ -15,8 +15,8 @@ namespace Ebury_mass_payments
         private static readonly HttpClient client = new HttpClient();
         private EburyConfig EConfig = new();
 
-        private string access_token { get; set; }
-        private string mpi_id { get; set; }
+        private string AccessToken { get; set; }
+        private string MpiId { get; set; }
 
         private List<String> messages { get; set; }
         private List<String> ErrorMessages { get; set; }
@@ -26,21 +26,19 @@ namespace Ebury_mass_payments
         {
 
             messages = new();
-            access_token = token;
+            AccessToken = token;
 
         }
 
         public async Task<List<EburyPaymentsError>> GetPayments(string mpi_id = "")
         {
-            var uri = EburyConfig.MPI_Errors;
+            var uri = EConfig.getURL("error",mpi_id);
             client.DefaultRequestHeaders.Clear();
-            uri = uri.Replace("{BasePayment}", EburyConfig.BasePayment);
-            uri = uri.Replace("{ClientId}", EConfig.AccountId);
-            uri = uri.Replace("{$mass_payment_id}", mpi_id);
+  
             messages.Add($"Get Payment Details URL is {uri}");
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
 
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
             var response = await client.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
@@ -58,15 +56,12 @@ namespace Ebury_mass_payments
 
         public async Task<EburyPaymentsSummary> GetDetails(string mpi_id = "")
         {
-            var uri = EburyConfig.MPI_Details;
+            var uri = EConfig.getURL("summary",mpi_id);
             client.DefaultRequestHeaders.Clear();
-            uri = uri.Replace("{BasePayment}", EburyConfig.BasePayment);
-            uri = uri.Replace("{ClientId}", EConfig.AccountId);
-            uri = uri.Replace("{$mass_payment_id}", mpi_id);
             messages.Add($"Get Payment Details URL is {uri}");
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
 
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
             var response = await client.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
@@ -93,17 +88,9 @@ namespace Ebury_mass_payments
         public async Task<String> SendPayments(MassPaymentInstruction mpi, bool simulate = false)
         {
 
-            //   }
-            // private async Task PostJsonHttpClient(string uri, MassPaymentInstruction payload)
-            //     {
-            var uri = EburyConfig.MassPaymentCreateEndPoint;
-            uri = uri.Replace("{client_id}", EConfig.AccountId);
-            uri = uri.Replace("{basePayment}", EburyConfig.BasePayment);
-                      JsonSerializerOptions options = new()
-            {
-           //     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-            };
-            string jsonString = System.Text.Json.JsonSerializer.Serialize(mpi, options);
+            var uri = EConfig.GetMassPaymentCreateEndPoint();
+
+            string jsonString = System.Text.Json.JsonSerializer.Serialize(mpi);
             messages.Add($"JSON {jsonString}");
             if (simulate)
             {
@@ -115,9 +102,9 @@ namespace Ebury_mass_payments
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             request.Content = new StringContent(jsonString, Encoding.UTF8);
             request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
             var response = await client.SendAsync(request);
-            messages.Add($"Making call to URI {uri} with access token {access_token}");
+            messages.Add($"Making call to URI {uri} with access token {AccessToken}");
             string responseBody = await response.Content.ReadAsStringAsync();
 
         
@@ -131,9 +118,9 @@ namespace Ebury_mass_payments
             if (response.StatusCode == System.Net.HttpStatusCode.Accepted)
             {
                 MassPaymentResponse mpr = JsonSerializer.Deserialize<MassPaymentResponse>(responseBody);
-                mpi_id = mpr.mass_payment_id;
-                messages.Add($"Got MPI ID {mpi_id}");
-                return mpi_id;
+                MpiId = mpr.mass_payment_id;
+                messages.Add($"Got MPI ID {MpiId}");
+                return MpiId;
             }
            
             messages.Add(responseBody);

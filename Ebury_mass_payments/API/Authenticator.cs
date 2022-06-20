@@ -11,16 +11,16 @@ namespace Ebury_mass_payments
     public class Authenticator
 
     {
-        private static readonly HttpClient client = new HttpClient();
-        private EburyConfig EConfig = new();
+        private static readonly HttpClient HttpClient = new HttpClient();
+        private readonly EburyConfig EConfig = new();
 
-        private string authtoken { get; set; }
-        private string accesstoken { get; set; }
-        private string state { get; set; }
+        private string Authtoken { get; set; }
+        private string Accesstoken { get; set; }
+        private string State { get; set; }
 
         private List<string> messages { get;set;}
 
-        private TokenCache tc { get; set; }
+        private TokenCache Tc { get; set; }
 
         public Authenticator()
         {
@@ -29,7 +29,7 @@ namespace Ebury_mass_payments
 
         public static string GenerateState(int length = 8)
         {
-            var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
             var Charsarr = new char[length];
             var random = new Random();
 
@@ -42,33 +42,27 @@ namespace Ebury_mass_payments
 
         public string GetState()
         {
-            if (String.IsNullOrEmpty(state))
+            if (String.IsNullOrEmpty(State))
             {
-                state = GenerateState(8);
+                State = GenerateState(8);
             }
-            return state;
+            return State;
         }
 
         public List<string> GetMessages()
         {
-            messages.AddRange(tc.GetMessages());
+            messages.AddRange(Tc.GetMessages());
             return messages;
-        }
-
-
-        public bool IsAuthorized()
-        {
-            return String.IsNullOrEmpty(authtoken);
         }
 
         public async Task<bool> Authenticate()
         {
-            tc = new TokenCache();
-            var cachedToken = tc.GetCache();
+            Tc = new TokenCache();
+            string cachedToken = Tc.GetCache();
             if (cachedToken != null)
             {
-                accesstoken = cachedToken;
-                messages.Add($"Using cached token {accesstoken}");
+                Accesstoken = cachedToken;
+                messages.Add($"Using cached token {Accesstoken}");
                 return true;
             }
             else
@@ -86,34 +80,27 @@ namespace Ebury_mass_payments
                 messages.Add("Login call failed");
             }
 
-            var res = await ObtainAccessToken();
+            bool res = await ObtainAccessToken();
             if (!res)
             {
                 messages.Add("ObtainAccessToken call failed");
             }
-            messages.Add($"Token is {accesstoken} and length is {accesstoken.Length}");
+            messages.Add($"Token is {Accesstoken} and length is {Accesstoken.Length}");
 
-            await tc.SetCache(accesstoken);
+            await Tc.SetCache(Accesstoken);
             return true;
         }
 
         private async Task<bool> Authenticate_call()
         {
 
-            var uri = "{authenticate_uri}/authenticate?scope=openid&response_type=code&client_id={ClientId}&state={state}&redirect_uri={redirect_uri}";
-            uri = uri.Replace("{authenticate_uri}", EburyConfig.AuthenticateURL);
-            uri = uri.Replace("{BaseAuth}", EburyConfig.BaseAuth);
-            uri = uri.Replace("{ClientId}", EConfig.ClientId);
-            uri = uri.Replace("{redirect_uri}", EburyConfig.redirect_uri);
-            uri = uri.Replace("{state}", GetState());
+            var uri = EConfig.getAuthenticateURL();
+
+            uri = uri.Replace("{State}", GetState());
             messages.Add($"Authenticate URL = {uri}");
             var getRequest = new HttpRequestMessage(HttpMethod.Get, uri);
 
-
-            var getResponse = await client.SendAsync(getRequest);
-            Console.Write((int)getResponse.StatusCode);
-
-            var content = await getResponse.Content.ReadAsStringAsync();
+            var getResponse = await HttpClient.SendAsync(getRequest);
             getResponse.EnsureSuccessStatusCode();
             if (!getResponse.IsSuccessStatusCode)
             {
@@ -144,9 +131,9 @@ namespace Ebury_mass_payments
             };
 
             var data = new FormUrlEncodedContent(values);
-            var response = await client.PostAsync(EburyConfig.AuthenticateURL.Replace("{BaseAuth}", EburyConfig.BaseAuth) + "/login", data);
-            authtoken = QueryHelpers.ParseQuery(response.RequestMessage.RequestUri.Query)["Code"];
-            messages.Add($"Obtained Access Token = {authtoken}");
+            var response = await HttpClient.PostAsync(EburyConfig.LoginURL, data);
+            Authtoken = QueryHelpers.ParseQuery(response.RequestMessage.RequestUri.Query)["Code"];
+            messages.Add($"Obtained Access Token = {Authtoken}");
 
 
 
@@ -164,9 +151,8 @@ namespace Ebury_mass_payments
             }
             else
             {
-                string responseBody = await response.Content.ReadAsStringAsync();
+   
                 messages.Add("== Return for /login ==");
-             //   messages.Add(responseBody);
 
             }
             return true;
@@ -174,20 +160,20 @@ namespace Ebury_mass_payments
 
         public async Task<bool> ObtainAccessToken()
         {
-            messages.Add($"== getAccessToken for {authtoken} ==");
+            messages.Add($"== getAccessToken for {Authtoken} ==");
             var values = new Dictionary<string, string>
             {
                 { "grant_type" , "authorization_code"},
-                { "code" , authtoken},
-                { "redirect_uri" , EburyConfig.redirect_uri}
+                { "code" , Authtoken},
+                { "redirect_uri" , EConfig.RedirectURL}
             };
             var data = new FormUrlEncodedContent(values);
-            client.DefaultRequestHeaders.Clear();
+            HttpClient.DefaultRequestHeaders.Clear();
             var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(EConfig.ClientId + ":" + EConfig.ClientSecret);
             string val = System.Convert.ToBase64String(plainTextBytes);
-            client.DefaultRequestHeaders.Add("Authorization", "Basic " + val);
+            HttpClient.DefaultRequestHeaders.Add("Authorization", "Basic " + val);
 
-            var response = await client.PostAsync(EburyConfig.AuthenticateURL.Replace("{BaseAuth}", EburyConfig.BaseAuth) + "/token", data);
+            var response = await HttpClient.PostAsync(EburyConfig.TokenURL, data);
             if (!response.IsSuccessStatusCode)
             {
                 if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
@@ -204,8 +190,8 @@ namespace Ebury_mass_payments
             {
                 string responseBody = await response.Content.ReadAsStringAsync();
                 AccessResponse ar = JsonSerializer.Deserialize<AccessResponse>(responseBody);
-                accesstoken = ar.access_token;
-                return !string.IsNullOrEmpty(accesstoken);
+                Accesstoken = ar.access_token;
+                return !string.IsNullOrEmpty(Accesstoken);
             }
 
         }
@@ -213,21 +199,9 @@ namespace Ebury_mass_payments
         public string GetAccessToken()
         {
 
-            return accesstoken;
+            return Accesstoken;
         }
 
-        public string getAuthToken()
-        {
-
-
-            if (String.IsNullOrWhiteSpace(authtoken))
-            {
-                return "0c1a4cb51783459c92c06fe8907e538b";
-            }
-            else
-            {
-                return authtoken;
-            }
-        }
+        
     }
 }
